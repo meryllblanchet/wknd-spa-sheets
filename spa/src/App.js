@@ -55,12 +55,12 @@ function App() {
         </header>
         <Router>
           <Routes>
-            <Route path="/adventure/:name" element={<AdventureDetail />} />
-            <Route path="/" element={<Home />} />
-            <Route path="/article" element={<ContentSample />} />
-            <Route path="/articles" element={<Articles />} />
-            <Route path="/articles/article:slug" element={<ArticleDetail />} />
-            <Route path="/articles/article:slug/aboutus" element={<About />} />
+            <Route path="/dist/adventure/:name" element={<AdventureDetail />} />
+            <Route path="/dist/" element={<Home />} />
+            <Route path="/dist/article" element={<ContentSample />} />
+            <Route path="/dist/articles" element={<Articles />} />
+            <Route path="/dist/articles/article:slug" element={<ArticleDetail />} />
+            <Route path="/dist/articles/article:slug/aboutus" element={<About />} />
           </Routes>
         </Router>
       </div>
