@@ -57,6 +57,7 @@ function App() {
           <Routes>
             <Route path="/dist/adventure/:name" element={<AdventureDetail />} />
             <Route path="/dist/" element={<Home />} />
+            <Route path="/dist/index.html" element={<Home />} />
             <Route path="/dist/article" element={<ContentSample />} />
             <Route path="/dist/articles" element={<Articles />} />
             <Route path="/dist/articles/article:slug" element={<ArticleDetail />} />
