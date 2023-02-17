@@ -5,12 +5,12 @@
   "type": "module",
   "scripts": {
     "start": "PORT=3000 HTTPS=true react-scripts start",
-    "build": "react-scripts build && npx gulp",
+    "build": "BUILD_PATH='../dist' react-scripts build && npx gulp",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server/index.js",
     "deploy": "./deploy/script.sh",
-    "postinstall": "husky install"
+    "_postinstall": "husky install"
   },
   "dependencies": {
     "@adobe/aem-headless-client-js": "^3.1.0",

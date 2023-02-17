@@ -1,11 +1,4 @@
 .*
 *.md
-karma.config.js
 LICENSE
-package.json
-package-lock.json
-test/*
-src/*
-public/*
-gulpfile.js
-webpack.config.js
+spa/*
