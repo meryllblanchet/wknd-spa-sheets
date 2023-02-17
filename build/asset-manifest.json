@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/static/css/main.d3ea9e56.chunk.css",
+    "main.js": "/static/js/main.d8b3a9a7.chunk.js",
+    "main.js.map": "/static/js/main.d8b3a9a7.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.02a679f4.js",
+    "runtime-main.js.map": "/static/js/runtime-main.02a679f4.js.map",
+    "static/js/2.910d2df1.chunk.js": "/static/js/2.910d2df1.chunk.js",
+    "static/js/2.910d2df1.chunk.js.map": "/static/js/2.910d2df1.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.d3ea9e56.chunk.css.map": "/static/css/main.d3ea9e56.chunk.css.map",
+    "static/js/2.910d2df1.chunk.js.LICENSE.txt": "/static/js/2.910d2df1.chunk.js.LICENSE.txt",
+    "static/media/footer.2830bf6e.jpeg": "/static/media/footer.2830bf6e.jpeg",
+    "static/media/icon-close.e4df2958.svg": "/static/media/icon-close.e4df2958.svg",
+    "static/media/icon-loading.2c27a19f.svg": "/static/media/icon-loading.2c27a19f.svg",
+    "static/media/App.scss": "/static/media/wknd-card.42e74d83.jpeg",
+    "static/media/wknd-logo-dk.5fba0497.svg": "/static/media/wknd-logo-dk.5fba0497.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.02a679f4.js",
+    "static/js/2.910d2df1.chunk.js",
+    "static/css/main.d3ea9e56.chunk.css",
+    "static/js/main.d8b3a9a7.chunk.js"
+  ]
+}
