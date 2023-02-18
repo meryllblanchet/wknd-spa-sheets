@@ -26,7 +26,7 @@ function AdventureItem(props) {
 
   return (
          <li className="adventure-item" itemScope {...editorProps}>
-          <Link to={`/dist/adventure/${props.name}`}>
+          <Link to={`/adventure/${props.name}`}>
             <img className="adventure-item-image" src={props.image}
                 alt={props.title} itemProp="primaryImage" itemType="image" />
           </Link>
