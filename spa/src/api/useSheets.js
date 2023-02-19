@@ -24,7 +24,9 @@ export default function useSheets(path, sheet) {
   useEffect(() => {
     async function load() {
       const url = new URL(`${REACT_APP_FRANKLIN_HOST_URI}${path}`);
-      url.searchParams.append('sheet', sheet);
+      if (sheet) {
+        url.searchParams.append('sheet', sheet);
+      }
       const res = await fetch(url);
       const json = await res.json();
       return json.data;

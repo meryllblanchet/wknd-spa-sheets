@@ -9,7 +9,9 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-underscore-dangle,no-await-in-loop */
+import { writeFile } from 'fs/promises';
+import mime from 'mime';
 import { basename } from 'path';
 import { h1NoCache } from '@adobe/fetch';
 import { stringify } from 'csv-stringify/sync';
@@ -50,10 +52,16 @@ async function adventures() {
   const json = await res.json();
   const rows = [];
   for (const adv of json.data.adventureList.items) {
-    // eslint-disable-next-line no-await-in-loop
     const details = await getAdventureDetails(adv.slug);
+    const name = basename(adv._path);
+    const img = await fetch(adv.primaryImage._authorUrl);
+    const ext = mime.getExtension(img.headers.get('content-type'));
+    const buffer = await img.buffer();
+    const imgName = `tmp/${name}.${ext}`;
+    await writeFile(imgName, buffer);
+    process.stderr.write(`saved ${imgName}\n`);
     rows.push({
-      name: basename(adv._path),
+      name,
       ...details,
       image: adv.primaryImage._authorUrl,
     });

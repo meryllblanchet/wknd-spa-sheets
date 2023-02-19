@@ -16,18 +16,20 @@ import Loading from './Loading.js';
 import './Adventures.scss';
 import useSheets from '../api/useSheets.js';
 
+const { REACT_APP_FRANKLIN_HOST_URI = '' } = process.env;
 function AdventureItem(props) {
   const editorProps = useMemo(() => true && { itemID: `urn:aemconnection:${props?._path}/jcr:content/data/master`, itemType: 'reference', itemfilter: 'cf' }, [props._path]);
 
   // Must have title, path, and image
-  if (!props || !props.name || !props.title || !props.image) {
+  if (!props || !props.name || !props.title) {
     return null;
   }
+  const image = props.image ?? `${REACT_APP_FRANKLIN_HOST_URI}/assets/adventures/${props.name}.jpeg`;
 
   return (
          <li className="adventure-item" itemScope {...editorProps}>
           <Link to={`/adventure/${props.name}`}>
-            <img className="adventure-item-image" src={props.image}
+            <img className="adventure-item-image" src={image}
                 alt={props.title} itemProp="primaryImage" itemType="image" />
           </Link>
           <div className="adventure-item-length-price">
@@ -60,7 +62,7 @@ function AdventureItem(props) {
 
 function Adventures() {
   // Use a custom React Hook to load sheet data
-  const { data, errorMessage } = useSheets('/adventures.json', 'adventures');
+  const { data, errorMessage } = useSheets('/adventures.json');
 
   // If there is an error with the GraphQL query
   if (errorMessage) return <Error errorMessage={errorMessage} />;
