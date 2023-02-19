@@ -58,9 +58,9 @@ function App() {
             <Route path="/adventure/:name" element={<AdventureDetail />} />
             <Route path="/" element={<Home />} />
             <Route path="/article" element={<ContentSample />} />
-            <Route path="/articles" element={<Articles />} />
-            <Route path="/articles/article:slug" element={<ArticleDetail />} />
-            <Route path="/articles/article:slug/aboutus" element={<About />} />
+            <Route path="/magazine" element={<Articles />} />
+            <Route path="/magazine/:name" element={<ArticleDetail />} />
+            <Route path="/magazine/aboutus" element={<About />} />
           </Routes>
         </Router>
       </div>

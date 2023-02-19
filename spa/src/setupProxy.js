@@ -9,25 +9,20 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import React from 'react';
-import Adventures from './Adventures.jsx';
-import Card from './Card.jsx';
-import Summary from './Summary.jsx';
-import Title from './Title.jsx';
-/** *
- * Displays a grid of current adventures
- */
-function Home() {
-  return (
-      <div className="Home">
-        <Card/>
-        <hr/>
-        <Title itemID="urn:aemconnection:/content/wknd/us/en/about-us/jcr:content/root/container/title_393953656_copy" itemType="text" itemProp="jcr:title"/>
-        <Adventures />
-        <hr/>
-        <Summary />
-    </div>
-  );
-}
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
-export default Home;
+module.exports = (app) => {
+  app.use(
+    [
+      '*.md',
+      '/adventures.json',
+      '/articles.json',
+      '/assets',
+    ],
+    createProxyMiddleware({
+      target: 'https://main--wknd-spa-sheets--tripodsan.hlx.page',
+      changeOrigin: true,
+    }),
+  );
+};

@@ -17,14 +17,15 @@ import Error from './Error.js';
 import Loading from './Loading.js';
 import './AdventureDetail.scss';
 import useSheets from '../api/useSheets.js';
+import { createMarkup } from '../utils/utils.js';
 
 function AdventureDetail() {
   // params hook from React router
   const { name } = useParams();
   const navigate = useNavigate();
 
-  // Use a custom React Hook to execute the GraphQL query
-  const { data, errorMessage } = useSheets('/adventures.json', 'adventures');
+  // Use a custom React Hook to execute the sheets query
+  const { data, errorMessage } = useSheets('/adventures.json');
 
   // If there is an error with the GraphQL query
   if (errorMessage) return <Error errorMessage={errorMessage} />;
@@ -67,9 +68,8 @@ function AdventureDetailRender({
 }) {
   const editorProps = useMemo(() => true && { itemID: `adventure/${name}`, itemType: 'urn:fcs:type/fragment' }, [name]);
 
-  function createMarkup(val) {
-    return { __html: val };
-  }
+  // eslint-disable-next-line no-param-reassign
+  image = image ?? `/assets/adventures/${name}.jpeg`;
 
   return (<div {...editorProps} itemScope>
             <h1 className="adventure-detail-title">{title}</h1>

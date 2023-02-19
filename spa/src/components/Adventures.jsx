@@ -16,7 +16,6 @@ import Loading from './Loading.js';
 import './Adventures.scss';
 import useSheets from '../api/useSheets.js';
 
-const { REACT_APP_FRANKLIN_HOST_URI = '' } = process.env;
 function AdventureItem(props) {
   const editorProps = useMemo(() => true && { itemID: `urn:aemconnection:${props?._path}/jcr:content/data/master`, itemType: 'reference', itemfilter: 'cf' }, [props._path]);
 
@@ -24,7 +23,7 @@ function AdventureItem(props) {
   if (!props || !props.name || !props.title) {
     return null;
   }
-  const image = props.image ?? `${REACT_APP_FRANKLIN_HOST_URI}/assets/adventures/${props.name}.jpeg`;
+  const image = props.image || `/assets/adventures/${props.name}.jpeg`;
 
   return (
          <li className="adventure-item" itemScope {...editorProps}>

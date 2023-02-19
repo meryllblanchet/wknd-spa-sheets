@@ -10,24 +10,46 @@
  * governing permissions and limitations under the License.
  */
 import { useState, useEffect } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { fromMarkdown } from 'mdast-util-from-markdown';
+
+function toDom(node) {
+  return node.children.map((child, idx) => {
+    if (child.type === 'paragraph') {
+      return <p key={idx}>{toDom(child)}</p>;
+    }
+    if (child.type === 'heading') {
+      switch (child.level) {
+        case 1:
+        default:
+          return <h1 key={idx}>{toDom(child)}</h1>;
+      }
+    }
+    if (child.type === 'text') {
+      return child.value;
+    }
+    return [];
+  });
+}
 
 /**
  * Custom React Hook to read from franklin sheet query
- * @param path path to workbook
- * @param sheet name of sheet
+ * @param path path to document
+ * @param variant name of sheet
  */
-export default function useSheets(path, sheet) {
+export default function useDocument(path) {
   const [data, setData] = useState(null);
   const [errorMessage, setErrors] = useState(null);
   useEffect(() => {
     async function load() {
-      let url = path;
-      if (sheet) {
-        url += `?sheet=${sheet}`;
+      // due to https://github.com/adobe/helix-html-pipeline/issues/30 we cannot load the html, but
+      // need to convert the md here
+      const res = await fetch(`${path}.md`);
+      if (!res.ok) {
+        return '';
       }
-      const res = await fetch(url);
-      const json = await res.json();
-      return json.data;
+      const mdast = fromMarkdown(await res.text());
+      return toDom(mdast);
     }
     load()
       .then(setData)
@@ -35,7 +57,7 @@ export default function useSheets(path, sheet) {
         setErrors(e);
         sessionStorage.removeItem('accessToken');
       });
-  }, [path, sheet]);
+  }, [path]);
 
   return { data, errorMessage };
 }

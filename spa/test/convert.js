@@ -18,6 +18,35 @@ import { stringify } from 'csv-stringify/sync';
 
 const { fetch } = h1NoCache();
 
+async function saveImage(url, name) {
+  const img = await fetch(url);
+  const ext = mime.getExtension(img.headers.get('content-type'));
+  const buffer = await img.buffer();
+  const imgName = `tmp/${name}.${ext}`;
+  await writeFile(imgName, buffer);
+  process.stderr.write(`saved ${imgName}\n`);
+}
+
+/**
+ * Sanitizes the given string by :
+ * - convert to lower case
+ * - normalize all unicode characters
+ * - replace all non-alphanumeric characters with a dash
+ * - remove all consecutive dashes
+ * - remove all leading and trailing dashes
+ *
+ * @param {string} name
+ * @returns {string} sanitized name
+ */
+export function sanitizeName(name) {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 function toTable(rows) {
   // assume first row contains all column names
   const table = [];
@@ -54,12 +83,7 @@ async function adventures() {
   for (const adv of json.data.adventureList.items) {
     const details = await getAdventureDetails(adv.slug);
     const name = basename(adv._path);
-    const img = await fetch(adv.primaryImage._authorUrl);
-    const ext = mime.getExtension(img.headers.get('content-type'));
-    const buffer = await img.buffer();
-    const imgName = `tmp/${name}.${ext}`;
-    await writeFile(imgName, buffer);
-    process.stderr.write(`saved ${imgName}\n`);
+    await saveImage(adv.primaryImage._authorUrl, name);
     rows.push({
       name,
       ...details,
@@ -69,4 +93,52 @@ async function adventures() {
   toTable(rows);
 }
 
-adventures().catch(console.error);
+async function getArticleDetails(slug) {
+  process.stderr.write(`loading ${slug}\n`);
+  const res = await fetch(`https://author-p15902-e145656-cmstg.adobeaemcloud.com/graphql/execute.json/wknd-shared/article-by-slug;slug=${slug}`);
+  const json = await res.json();
+  const art = json.data.articleList.items[0];
+  const name = basename(art._path);
+  const html = [`<h1>${art.title}</h1>`];
+  let abstract;
+  for (const para of art.main.json) {
+    html.push(`<p>${para.content[0].value}</p>`);
+    if (!abstract) {
+      abstract = para.content[0].value;
+    }
+  }
+  return {
+    title: art.title,
+    name,
+    html,
+    abstract,
+  };
+}
+
+async function articles() {
+  const res = await fetch('https://author-p15902-e145656-cmstg.adobeaemcloud.com/graphql/execute.json/wknd-shared/articles-all');
+  const json = await res.json();
+  const rows = [];
+  for (const art of json.data.articleList.items) {
+    const details = await getArticleDetails(art.slug);
+    const name = basename(art._path);
+    const author = `${art.authorFragment.firstName} ${art.authorFragment.lastName}`;
+    const authorName = sanitizeName(author);
+
+    // if (art.featuredImage) {
+    //   await saveImage(art.featuredImage._authorUrl, `articles/${name}`);
+    // }
+    // await saveImage(art.authorFragment.profilePicture._authorUrl, `authors/${authorName}`);
+    await writeFile(`tmp/articles/${name}.html`, details.html);
+    rows.push({
+      name,
+      title: art.title,
+      author,
+      abstract: details.abstract,
+    });
+  }
+  toTable(rows);
+}
+
+// adventures().catch(console.error);
+articles().catch(console.error);
