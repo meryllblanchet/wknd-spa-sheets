@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Error from './Error.js';
 import Loading from './Loading.js';
@@ -17,8 +17,6 @@ import './Adventures.scss';
 import useSheets from '../api/useSheets.js';
 
 function AdventureItem(props) {
-  const editorProps = useMemo(() => true && { itemID: `urn:aemconnection:${props?._path}/jcr:content/data/master`, itemType: 'reference', itemfilter: 'cf' }, [props._path]);
-
   // Must have title, path, and image
   if (!props || !props.name || !props.title) {
     return null;
@@ -26,10 +24,10 @@ function AdventureItem(props) {
   const image = props.image || `/assets/adventures/${props.name}.jpeg`;
 
   return (
-         <li className="adventure-item" itemScope {...editorProps}>
+         <li className="adventure-item" itemScope itemID={props.itemID} itemType="urn:fnk:type/sheet">
           <Link to={`/adventure/${props.name}`}>
             <img className="adventure-item-image" src={image}
-                alt={props.title} itemProp="primaryImage" itemType="image" />
+                alt={props.title} itemProp="image" itemType="image" />
           </Link>
           <div className="adventure-item-length-price">
             <div className="adventure-item-length" itemProp="tripLength" itemType="text">{props.tripLength}</div>
@@ -61,7 +59,8 @@ function AdventureItem(props) {
 
 function Adventures() {
   // Use a custom React Hook to load sheet data
-  const { data, errorMessage } = useSheets('urn:fnkconnection:/adventures.json:default');
+  const itemID = 'urn:fnkconnection:/adventures.json:default';
+  const { data, errorMessage } = useSheets(itemID);
 
   // If there is an error with the GraphQL query
   if (errorMessage) return <Error errorMessage={errorMessage} />;
@@ -75,7 +74,7 @@ function Adventures() {
           {
               // Iterate over the returned data items from the query
               data.map((adventure, index) => (
-                  <AdventureItem key={index} {...adventure} />
+                  <AdventureItem itemID={`${itemID}:name:${adventure.name}`} key={index} {...adventure} />
               ))
           }
           </ul>

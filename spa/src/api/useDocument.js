@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { fromMarkdown } from 'mdast-util-from-markdown';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -60,6 +60,7 @@ function collectImages(tree) {
 export default function useDocument(uri) {
   const [data, setData] = useState(null);
   const [errorMessage, setErrors] = useState(null);
+  const cache = useRef({});
   useEffect(() => {
     async function load() {
       const [, con, path] = uri.split(':');
@@ -68,11 +69,17 @@ export default function useDocument(uri) {
       }
       // due to https://github.com/adobe/helix-html-pipeline/issues/30 we cannot load the html, but
       // need to convert the md here
-      const res = await fetch(`${path}.md`);
-      if (!res.ok) {
-        return '';
+      const url = `${path}.md`;
+      let text = cache.current[url];
+      if (!text) {
+        const res = await fetch(url);
+        if (!res.ok) {
+          throw Error(res.status);
+        }
+        text = await res.text();
+        cache.current[url] = text;
       }
-      const mdast = fromMarkdown(await res.text());
+      const mdast = fromMarkdown(text);
       dereference(mdast);
       return {
         dom: toDom(mdast),

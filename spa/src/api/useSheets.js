@@ -9,16 +9,16 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 /**
  * Custom React Hook to read from franklin sheet query
  * @param uri franklin plugin uri of the form `urn:fnkconnection:{path}:{sheet}:{keycol}:{key}`
  */
 export default function useSheets(uri) {
-  console.log(uri);
   const [data, setData] = useState(null);
   const [errorMessage, setErrors] = useState(null);
+  const cache = useRef({});
   useEffect(() => {
     async function load() {
       const [, con, path, sheet, keycol, key] = uri.split(':');
@@ -29,9 +29,12 @@ export default function useSheets(uri) {
       if (sheet) {
         url += `?sheet=${sheet}`;
       }
-      console.log(url);
-      const res = await fetch(url);
-      const json = await res.json();
+      let json = cache.current[url];
+      if (!json) {
+        const res = await fetch(url);
+        json = await res.json();
+        cache.current[url] = json;
+      }
       if (keycol === '#') {
         return json.data[Number(key || 0)];
       }

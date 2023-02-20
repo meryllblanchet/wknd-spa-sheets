@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 import React from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import backIcon from '../images/icon-close.svg';
 import Error from './Error.js';
 import Loading from './Loading.js';
@@ -24,7 +24,8 @@ function AdventureDetail() {
   const navigate = useNavigate();
 
   // Use a custom React Hook to execute the sheets query
-  const { data, errorMessage } = useSheets('/adventures.json');
+  const itemID = `urn:fnkconnection:/adventures.json:default:name:${name}`;
+  const { data, errorMessage } = useSheets(itemID);
 
   // If there is an error with the GraphQL query
   if (errorMessage) return <Error errorMessage={errorMessage} />;
@@ -32,18 +33,12 @@ function AdventureDetail() {
   // If query response is null then return a loading icon...
   if (!data) return <Loading />;
 
-  const currentAdventure = data.find((adv) => adv.name === name);
-
-  if (!currentAdventure) {
-    return <NoAdventureFound />;
-  }
-
   return (
     <div className="adventure-detail">
       <button className="adventure-detail-close-button" onClick={() => navigate(-1)}>
         <img className="Backbutton-icon" src={backIcon} alt="Return"/>
       </button>
-      <AdventureDetailRender {...currentAdventure}/>
+      <AdventureDetailRender itemID={itemID} {...data}/>
     </div>
   );
 }
@@ -60,14 +55,13 @@ function AdventureDetailRender({
   description,
   itinerary,
   contributor,
+  itemID,
 }) {
-  const itemId = `/adventures:default:name:${name}`;
-
   // eslint-disable-next-line no-param-reassign
   image = image ?? `/assets/adventures/${name}.jpeg`;
 
   return (
-    <div itemID={itemId} itemType="urn:fnk:type/sheet" itemScope>
+    <div itemID={itemID} itemType="urn:fnk:type/sheet" itemScope>
       <h1 className="adventure-detail-title">{title}</h1>
       <div className="adventure-detail-info">
         <div className="adventure-detail-info-label">Activity</div>
@@ -93,16 +87,16 @@ function AdventureDetailRender({
   );
 }
 
-function NoAdventureFound() {
-  return (
-    <div className="adventure-detail">
-        <Link className="adventure-detail-close-button" to={'/'}>
-            <img className="Backbutton-icon" src={backIcon} alt="Return" />
-        </Link>
-        <Error errorMessage="Missing data, adventure could not be rendered." />
-  </div>
-  );
-}
+// function NoAdventureFound() {
+//   return (
+//     <div className="adventure-detail">
+//         <Link className="adventure-detail-close-button" to={'/'}>
+//             <img className="Backbutton-icon" src={backIcon} alt="Return" />
+//         </Link>
+//         <Error errorMessage="Missing data, adventure could not be rendered." />
+//   </div>
+//   );
+// }
 
 function Contributer(props) {
   if (!props) {

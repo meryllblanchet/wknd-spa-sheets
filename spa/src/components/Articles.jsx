@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-disable max-len */
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Error from './Error.js';
 import Loading from './Loading.js';
@@ -18,13 +18,10 @@ import './Articles.scss';
 import useSheets from '../api/useSheets.js';
 
 const Article = ({
-  name, title, author, abstract,
-}) => {
-  const editorProps = useMemo(() => true && { itemID: name, itemType: 'urn:fcs:type/fragment' }, [name]);
-
-  return (
+  name, title, author, abstract, itemID,
+}) => (
     <li className="article-item">
-      <div itemScope {...editorProps}>
+      <div itemScope itemID={itemID}>
         <Link to={`/magazine/${name}`}>
           <h3 data-id="title" itemProp="title" itemType="text">{title}</h3>
           <img className="article-item-image" src={`/assets/articles/${name}.jpeg`}
@@ -34,11 +31,10 @@ const Article = ({
       </div>
       <p className="article-content" dangerouslySetInnerHTML={{ __html: abstract }} />
     </li>
-  );
-};
+);
 
 const Articles = () => {
-  const { data, errorMessage } = useSheets('/articles.json');
+  const { data, errorMessage } = useSheets('urn:fnkconnection:/articles.json:default');
 
   // If there is an error with the GraphQL query
   if (errorMessage) return <Error errorMessage={errorMessage} />;
@@ -51,9 +47,12 @@ const Articles = () => {
       <h2>Articles</h2>
       <ul>
         {
-            data.map((article, index) => (
-                <Article key={index} {...article} />
-            ))
+            data.map((article) => {
+              const itemID = `urn:fnkconnection:/magazine/${article.name}`;
+              return (
+                <Article itemID={itemID} key={itemID} {...article} />
+              );
+            })
         }
         </ul>
     </>

@@ -34,29 +34,23 @@ function ArticleDetail() {
   // If query response is null then return a loading icon...
   if (!data) return <Loading/>;
 
-  const currentArticle = data.find((adv) => adv.name === name);
-
-  // Must have title, path, and image
-  if (!currentArticle) {
-    return <NoArticleFound/>;
-  }
-
   return (<div className="adventure-detail">
     <button className="adventure-detail-close-button" onClick={() => navigate(-1)}>
       <img className="Backbutton-icon" src={backIcon} alt="Return"/>
     </button>
-    <ArticleDetailRender itemID={itemID} {...currentArticle} />
+    <ArticleDetailRender {...data} />
   </div>);
 }
 
 function ArticleDetailRender(props) {
-  const { itemID, name, title } = props;
+  const { name, title } = props;
 
-  const { data, errorMessage } = useDocument(`/magazine/${name}`, 'doc');
+  const itemID = `urn:fnkconnection:/magazine/${name}`;
+  const { data, errorMessage } = useDocument(itemID);
   if (errorMessage) return <Error errorMessage={errorMessage}/>;
   if (!data) return <Loading/>;
 
-  return (<div itemScope itemID={itemID} itemType="text/fragment">
+  return (<div itemScope itemID={itemID} itemType="unr:fnk:type/document">
       <h1 className="adventure-detail-title" itemProp="title" itemType="text">{title}</h1>
       <div className="adventure-detail-info">
         <Contributor {...props} />
@@ -65,22 +59,22 @@ function ArticleDetailRender(props) {
       <div className="adventure-detail-content">
         <img className="adventure-detail-primaryimage"
              src={`/assets/articles/${name}.jpeg`} alt={title}/>
-        <div>{data}</div>
+        <div>{data.dom}</div>
       </div>
     </div>
   );
 }
 
-function NoArticleFound() {
-  return (
-    <div className="adventure-detail">
-      <Link className="adventure-detail-close-button" to={'/'}>
-        <img className="Backbutton-icon" src={backIcon} alt="Return"/>
-      </Link>
-      <Error errorMessage="Missing data, article could not be rendered."/>
-    </div>
-  );
-}
+// function NoArticleFound() {
+//   return (
+//     <div className="adventure-detail">
+//       <Link className="adventure-detail-close-button" to={'/'}>
+//         <img className="Backbutton-icon" src={backIcon} alt="Return"/>
+//       </Link>
+//       <Error errorMessage="Missing data, article could not be rendered."/>
+//     </div>
+//   );
+// }
 
 function Contributor(props) {
   return (

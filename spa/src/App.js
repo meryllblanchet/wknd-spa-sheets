@@ -26,7 +26,6 @@ function App() {
   //   document.querySelector('meta[name="urn:auecon:fnkconnection"]')
   //     .setAttribute('content', `fnk:${REACT_APP_HOST_URI}`);
   // });
-
   return (
     <div className="App">
       <div className="Home">
