@@ -10,19 +10,25 @@
  * governing permissions and limitations under the License.
  */
 import React from 'react';
-import image from '../images/footer.jpeg';
 import Text from './Text.jsx';
 import Title from './Title.jsx';
+import useDocument from '../api/useDocument.js';
+import Error from './Error.js';
+import Loading from './Loading.js';
 
-const Summary = () => (
+export default function Summary() {
+  const itemID = 'urn:fnkconnection:/aboutus';
+  const { data, errorMessage } = useDocument(itemID);
+  if (errorMessage) return <Error errorMessage={errorMessage}/>;
+  if (!data) return <Loading/>;
+  return (
     <div className="card">
-      <div>
-      <Title itemID="urn:aemconnection:/content/wknd/us/en/about-us/jcr:content/root/container/title" itemProp="jcr:title" itemType="text"/>
-      <Text itemID="urn:aemconnection:/content/wknd/us/en/about-us/jcr:content/root/container/text_359993709" itemProp="text" itemType="richtext"/>
-      <Text itemID="urn:aemconnection:/content/wknd/us/en/faqs/jcr:content/root/container/container/text" itemProp="text" itemType="richtext" />
+      <div itemID={itemID} itemType="urn:fnk:type/document" itemScope>
+        {data.dom}
+        <Title itemID={itemID} itemProp="title" itemType="text"/>
+        <Text itemID={itemID} itemProp="content" itemType="richtext"/>
       </div>
-      <img src={image} alt="footer" />
+      <img src={data.images?.[0]} alt="footer"/>
     </div>
-);
-
-export default Summary;
+  );
+}

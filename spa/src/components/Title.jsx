@@ -9,28 +9,24 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import React, { useEffect, useMemo } from 'react';
-import { fetchData } from '../utils/fetchData.js';
+import React from 'react';
+import useSheets from '../api/useSheets.js';
+import Error from './Error.js';
 
 const Title = (props) => {
   const {
-    itemID, itemProp, itemType, className,
+    itemID, itemProp, itemType, className, TitleTag = 'h1',
   } = props;
-  const editorProps = useMemo(() => true && {
-    itemID,
-    itemProp,
-    itemType,
-  }, [itemID, itemProp, itemType]);
 
-  const [data, setData] = React.useState({});
-  useEffect(() => {
-    if (!itemID || !itemProp) return;
-    fetchData(itemID).then((d) => setData(d));
-  }, [itemID, itemProp]);
+  const { data, errorMessage } = useSheets(itemID);
 
-  const TitleTag = `${data.type}`;
+  // If there is an error with the GraphQL query
+  if (errorMessage) return <Error errorMessage={errorMessage} />;
+
+  const text = data?.[itemProp] ?? '';
   return (
-    <TitleTag {...editorProps} className={className}>{data.text}</TitleTag>
+    // eslint-disable-next-line max-len
+    <TitleTag itemID={itemID} itemProp={itemProp} itemType={itemType} className={className}>{text}</TitleTag>
   );
 };
 

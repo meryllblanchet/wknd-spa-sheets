@@ -13,20 +13,31 @@ import { useState, useEffect } from 'react';
 
 /**
  * Custom React Hook to read from franklin sheet query
- * @param path path to workbook
- * @param sheet name of sheet
+ * @param uri franklin plugin uri of the form `urn:fnkconnection:{path}:{sheet}:{keycol}:{key}`
  */
-export default function useSheets(path, sheet) {
+export default function useSheets(uri) {
+  console.log(uri);
   const [data, setData] = useState(null);
   const [errorMessage, setErrors] = useState(null);
   useEffect(() => {
     async function load() {
+      const [, con, path, sheet, keycol, key] = uri.split(':');
+      if (con !== 'fnkconnection') {
+        throw Error(`unsupported connection: ${con}`);
+      }
       let url = path;
       if (sheet) {
         url += `?sheet=${sheet}`;
       }
+      console.log(url);
       const res = await fetch(url);
       const json = await res.json();
+      if (keycol === '#') {
+        return json.data[Number(key || 0)];
+      }
+      if (keycol) {
+        return json.data.find((row) => row[keycol] === key);
+      }
       return json.data;
     }
     load()
@@ -35,7 +46,7 @@ export default function useSheets(path, sheet) {
         setErrors(e);
         sessionStorage.removeItem('accessToken');
       });
-  }, [path, sheet]);
+  }, [uri]);
 
   return { data, errorMessage };
 }

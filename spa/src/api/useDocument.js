@@ -12,11 +12,20 @@
 import { useState, useEffect } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { fromMarkdown } from 'mdast-util-from-markdown';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { visit } from 'unist-util-visit';
+import dereference from '../utils/mdast-util-dereference.js';
 
 function toDom(node) {
   return node.children.map((child, idx) => {
     if (child.type === 'paragraph') {
       return <p key={idx}>{toDom(child)}</p>;
+    }
+    if (child.type === 'strong') {
+      return <strong key={idx}>{toDom(child)}</strong>;
+    }
+    if (child.type === 'emphasis') {
+      return <em key={idx}>{toDom(child)}</em>;
     }
     if (child.type === 'heading') {
       switch (child.level) {
@@ -32,16 +41,31 @@ function toDom(node) {
   });
 }
 
+function collectImages(tree) {
+  const images = [];
+
+  // first find all definitions
+  visit(tree, (node) => {
+    if (node.type === 'image') {
+      images.push(node.url);
+    }
+  });
+  return images;
+}
+
 /**
  * Custom React Hook to read from franklin sheet query
- * @param path path to document
- * @param variant name of sheet
+ * @param uri franklin plugin uri of the form `urn:fnkconnection:{path}`
  */
-export default function useDocument(path) {
+export default function useDocument(uri) {
   const [data, setData] = useState(null);
   const [errorMessage, setErrors] = useState(null);
   useEffect(() => {
     async function load() {
+      const [, con, path] = uri.split(':');
+      if (con !== 'fnkconnection') {
+        throw Error(`unsupported connection: ${con}`);
+      }
       // due to https://github.com/adobe/helix-html-pipeline/issues/30 we cannot load the html, but
       // need to convert the md here
       const res = await fetch(`${path}.md`);
@@ -49,7 +73,11 @@ export default function useDocument(path) {
         return '';
       }
       const mdast = fromMarkdown(await res.text());
-      return toDom(mdast);
+      dereference(mdast);
+      return {
+        dom: toDom(mdast),
+        images: collectImages(mdast),
+      };
     }
     load()
       .then(setData)
@@ -57,7 +85,7 @@ export default function useDocument(path) {
         setErrors(e);
         sessionStorage.removeItem('accessToken');
       });
-  }, [path]);
+  }, [uri]);
 
   return { data, errorMessage };
 }

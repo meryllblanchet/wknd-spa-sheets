@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import { React, useEffect } from 'react';
+import { React } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home.jsx';
 import logo from './images/wknd-logo-dk.svg';
@@ -18,33 +18,14 @@ import AdventureDetail from './components/AdventureDetail.jsx';
 import Articles from './components/Articles.jsx';
 import ArticleDetail from './components/ArticleDetail.jsx';
 import About from './components/About.jsx';
-// import "./api/mirage.js";
-import ContentSample from './components/ContentSample.jsx';
 
-const { REACT_APP_HOST_URI } = process.env;
-
-// import { EditorProvider } from '@aem-sites/universal-editor-react';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <div className="Home">
-//         <header>
-//           <img src={logo} className="logo" alt="WKND Logo"/>
-//           <hr />
-//         </header>
-//         <EditorProvider>
-//           <Adventures />
-//         </EditorProvider>
-//       </div>
-//     </div>
-//   );
-// }
+// const { REACT_APP_HOST_URI } = process.env;
 
 function App() {
-  useEffect(() => {
-    document.querySelector('meta[name="urn:auecon:aemconnection"]').setAttribute('content', `aem:${REACT_APP_HOST_URI}`);
-  });
+  // useEffect(() => {
+  //   document.querySelector('meta[name="urn:auecon:fnkconnection"]')
+  //     .setAttribute('content', `fnk:${REACT_APP_HOST_URI}`);
+  // });
 
   return (
     <div className="App">
@@ -57,7 +38,6 @@ function App() {
           <Routes>
             <Route path="/adventure/:name" element={<AdventureDetail />} />
             <Route path="/" element={<Home />} />
-            <Route path="/article" element={<ContentSample />} />
             <Route path="/magazine" element={<Articles />} />
             <Route path="/magazine/:name" element={<ArticleDetail />} />
             <Route path="/magazine/aboutus" element={<About />} />

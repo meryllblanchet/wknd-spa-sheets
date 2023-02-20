@@ -61,7 +61,7 @@ function AdventureItem(props) {
 
 function Adventures() {
   // Use a custom React Hook to load sheet data
-  const { data, errorMessage } = useSheets('/adventures.json');
+  const { data, errorMessage } = useSheets('urn:fnkconnection:/adventures.json:default');
 
   // If there is an error with the GraphQL query
   if (errorMessage) return <Error errorMessage={errorMessage} />;

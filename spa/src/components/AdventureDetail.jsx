@@ -9,9 +9,8 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-// import CurrencyFormat from 'react-currency-format';
 import backIcon from '../images/icon-close.svg';
 import Error from './Error.js';
 import Loading from './Loading.js';
@@ -35,20 +34,18 @@ function AdventureDetail() {
 
   const currentAdventure = data.find((adv) => adv.name === name);
 
-  // set references of current adventure
-  const references = [];
-
-  // Must have title, path, and image
   if (!currentAdventure) {
     return <NoAdventureFound />;
   }
 
-  return (<div className="adventure-detail">
-        <button className="adventure-detail-close-button" onClick={() => navigate(-1)} >
-            <img className="Backbutton-icon" src={backIcon} alt="Return" />
-        </button>
-        <AdventureDetailRender {...currentAdventure} references={references}/>
-    </div>);
+  return (
+    <div className="adventure-detail">
+      <button className="adventure-detail-close-button" onClick={() => navigate(-1)}>
+        <img className="Backbutton-icon" src={backIcon} alt="Return"/>
+      </button>
+      <AdventureDetailRender {...currentAdventure}/>
+    </div>
+  );
 }
 
 function AdventureDetailRender({
@@ -63,39 +60,35 @@ function AdventureDetailRender({
   description,
   itinerary,
   contributor,
-  // eslint-disable-next-line no-unused-vars
-  references,
 }) {
-  const editorProps = useMemo(() => true && { itemID: `adventure/${name}`, itemType: 'urn:fcs:type/fragment' }, [name]);
+  const itemId = `/adventures:default:name:${name}`;
 
   // eslint-disable-next-line no-param-reassign
   image = image ?? `/assets/adventures/${name}.jpeg`;
 
-  return (<div {...editorProps} itemScope>
-            <h1 className="adventure-detail-title">{title}</h1>
-            <div className="adventure-detail-info">
-                <div className="adventure-detail-info-label">Activity</div>
-                <div className="adventure-detail-info-description" itemProp='activity' itemType="text">{activity}</div>
-                <div className="adventure-detail-info-label">Type</div>
-                <div className="adventure-detail-info-description" itemProp='adventureType' itemType="text">{adventureType}</div>
-                <div className="adventure-detail-info-label">Trip Length</div>
-                <div className="adventure-detail-info-description" itemProp='tripLength' itemType="text">{tripLength}</div>
-                <div className="adventure-detail-info-label">Group Size</div>
-                <div className="adventure-detail-info-description" itemProp='groupSize' itemType="text">{groupSize}</div>
-                <div className="adventure-detail-info-label">Difficulty</div>
-                <div className="adventure-detail-info-description" itemProp='difficulty' itemType="text">{difficulty}</div>
-            </div>
-            <div className="adventure-detail-content">
-                <img className="adventure-detail-primaryimage"
-                    src={image} alt={title} itemType="image"/>
-            <div dangerouslySetInnerHTML={createMarkup(description)} />
-            <h2>Itinerary</h2>
-            <hr />
-
-            {/* Render the itinerary without any custom render options (just use defaults) */}
-            <div className="adventure-detail-itinerary" dangerouslySetInnerHTML={createMarkup(itinerary)} />
-            <Contributer {...contributor} />
-            </div>
+  return (
+    <div itemID={itemId} itemType="urn:fnk:type/sheet" itemScope>
+      <h1 className="adventure-detail-title">{title}</h1>
+      <div className="adventure-detail-info">
+        <div className="adventure-detail-info-label">Activity</div>
+        <div className="adventure-detail-info-description" itemProp="activity" itemType="text">{activity}</div>
+        <div className="adventure-detail-info-label">Type</div>
+        <div className="adventure-detail-info-description" itemProp="adventureType" itemType="text">{adventureType}</div>
+        <div className="adventure-detail-info-label">Trip Length</div>
+        <div className="adventure-detail-info-description" itemProp="tripLength" itemType="text">{tripLength}</div>
+        <div className="adventure-detail-info-label">Group Size</div>
+        <div className="adventure-detail-info-description" itemProp="groupSize" itemType="text">{groupSize}</div>
+        <div className="adventure-detail-info-label">Difficulty</div>
+        <div className="adventure-detail-info-description" itemProp="difficulty" itemType="text">{difficulty}</div>
+      </div>
+      <div className="adventure-detail-content">
+        <img className="adventure-detail-primaryimage" src={image} alt={title} itemProp="image" itemType="image"/>
+        <div itemProp="description" itemType="richtext" dangerouslySetInnerHTML={createMarkup(description)}/>
+        <h2>Itinerary</h2>
+        <hr/>
+        <div itemProp="itinerary" itemType="richtext" className="adventure-detail-itinerary" dangerouslySetInnerHTML={createMarkup(itinerary)}/>
+        <Contributer {...contributor} />
+      </div>
     </div>
   );
 }

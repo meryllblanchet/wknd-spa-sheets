@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import backIcon from '../images/icon-close.svg';
 import Error from './Error.js';
@@ -25,7 +25,8 @@ function ArticleDetail() {
   const navigate = useNavigate();
 
   // Use a custom React Hook to execute the sheets query
-  const { data, errorMessage } = useSheets('/articles.json');
+  const itemID = `urn:fnkconnection:/articles.json:default:name:${name}`;
+  const { data, errorMessage } = useSheets(itemID);
 
   // If there is an error with the GraphQL query
   if (errorMessage) return <Error errorMessage={errorMessage}/>;
@@ -44,19 +45,18 @@ function ArticleDetail() {
     <button className="adventure-detail-close-button" onClick={() => navigate(-1)}>
       <img className="Backbutton-icon" src={backIcon} alt="Return"/>
     </button>
-    <ArticleDetailRender {...currentArticle} />
+    <ArticleDetailRender itemID={itemID} {...currentArticle} />
   </div>);
 }
 
 function ArticleDetailRender(props) {
-  const { name, title } = props;
-  const editorProps = useMemo(() => true && { itemID: name, itemType: 'text/fragment' }, [name]);
+  const { itemID, name, title } = props;
 
   const { data, errorMessage } = useDocument(`/magazine/${name}`, 'doc');
   if (errorMessage) return <Error errorMessage={errorMessage}/>;
   if (!data) return <Loading/>;
 
-  return (<div itemScope {...editorProps}>
+  return (<div itemScope itemID={itemID} itemType="text/fragment">
       <h1 className="adventure-detail-title" itemProp="title" itemType="text">{title}</h1>
       <div className="adventure-detail-info">
         <Contributor {...props} />

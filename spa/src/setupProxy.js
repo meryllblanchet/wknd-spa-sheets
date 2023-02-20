@@ -18,6 +18,7 @@ module.exports = (app) => {
       '*.md',
       '/adventures.json',
       '/articles.json',
+      '/home.json',
       '/assets',
     ],
     createProxyMiddleware({

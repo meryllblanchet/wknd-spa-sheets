@@ -22,7 +22,7 @@ function Home() {
       <div className="Home">
         <Card/>
         <hr/>
-        <Title itemID="urn:aemconnection:/content/wknd/us/en/about-us/jcr:content/root/container/title_393953656_copy" itemType="text" itemProp="jcr:title"/>
+        <Title itemID="urn:fnkconnection:/home.json:guides:#:0" itemType="text" itemProp="title"/>
         <Adventures />
         <hr/>
         <Summary />
