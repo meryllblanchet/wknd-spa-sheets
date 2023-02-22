@@ -62,7 +62,7 @@ function AdventureDetailRender({
 
   return (
     <div itemID={itemID} itemType="urn:fnk:type/sheet" itemScope>
-      <h1 className="adventure-detail-title">{title}</h1>
+      <h1 itemProp="title" itemType="text" className="adventure-detail-title">{title}</h1>
       <div className="adventure-detail-info">
         <div className="adventure-detail-info-label">Activity</div>
         <div className="adventure-detail-info-description" itemProp="activity" itemType="text">{activity}</div>
