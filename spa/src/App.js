@@ -30,7 +30,9 @@ function App() {
     <div className="App">
       <div className="Home">
         <header>
-          <img src={logo} className="logo" alt="WKND Logo" />
+          <a href="/">
+            <img src={logo} className="logo" alt="WKND Logo" />
+          </a>
           <hr />
         </header>
         <Router>

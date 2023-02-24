@@ -76,7 +76,7 @@ function AdventureDetailRender({
         <div className="adventure-detail-info-description" itemProp="difficulty" itemType="text">{difficulty}</div>
       </div>
       <div className="adventure-detail-content">
-        <img className="adventure-detail-primaryimage" src={image} alt={title} itemProp="image" itemType="image"/>
+        <img className="adventure-detail-primaryimage" src={image} alt={title} itemProp="image" itemType="media"/>
         <div itemProp="description" itemType="richtext" dangerouslySetInnerHTML={createMarkup(description)}/>
         <h2>Itinerary</h2>
         <hr/>
