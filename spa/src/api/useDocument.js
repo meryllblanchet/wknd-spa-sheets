@@ -16,29 +16,35 @@ import { fromMarkdown } from 'mdast-util-from-markdown';
 import { visit } from 'unist-util-visit';
 import dereference from '../utils/mdast-util-dereference.js';
 
-function toDom(node) {
+function toDom(node, filter) {
   return node.children.map((child, idx) => {
+    if (filter && !filter(child)) {
+      return null;
+    }
     if (child.type === 'paragraph') {
-      return <p key={idx}>{toDom(child)}</p>;
+      return <p key={idx}>{toDom(child, filter)}</p>;
     }
     if (child.type === 'strong') {
-      return <strong key={idx}>{toDom(child)}</strong>;
+      return <strong key={idx}>{toDom(child, filter)}</strong>;
+    }
+    if (child.type === 'image') {
+      return <img key={idx} src={child.url} alt={child.alt}/>;
     }
     if (child.type === 'emphasis') {
-      return <em key={idx}>{toDom(child)}</em>;
+      return <em key={idx}>{toDom(child, filter)}</em>;
     }
     if (child.type === 'heading') {
       switch (child.level) {
         case 1:
         default:
-          return <h1 key={idx}>{toDom(child)}</h1>;
+          return <h1 key={idx}>{toDom(child, filter)}</h1>;
       }
     }
     if (child.type === 'text') {
       return child.value;
     }
-    return [];
-  });
+    return null;
+  }).filter((elem) => !!elem);
 }
 
 function collectImages(tree) {
@@ -53,11 +59,22 @@ function collectImages(tree) {
   return images;
 }
 
+function removeTitle(tree) {
+  const idx = tree.children.findIndex(({ type }) => type === 'heading');
+  if (idx < 0) {
+    return null;
+  }
+  const children = tree.children.splice(idx, 1);
+  const dom = toDom({ children });
+  return dom[0];
+}
+
 /**
  * Custom React Hook to read from franklin sheet query
  * @param uri franklin plugin uri of the form `urn:fnkconnection:{path}`
+ * @param contentFilter optional filter for the content
  */
-export default function useDocument(uri) {
+export default function useDocument(uri, contentFilter) {
   const [data, setData] = useState(null);
   const [errorMessage, setErrors] = useState(null);
   const cache = useRef({});
@@ -81,9 +98,15 @@ export default function useDocument(uri) {
       }
       const mdast = fromMarkdown(text);
       dereference(mdast);
+      const dom = toDom(mdast);
+      const images = collectImages(mdast);
+      const title = removeTitle(mdast);
+      const content = toDom(mdast, contentFilter);
       return {
-        dom: toDom(mdast),
-        images: collectImages(mdast),
+        dom,
+        images,
+        title,
+        content,
       };
     }
     load()

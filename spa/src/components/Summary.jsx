@@ -9,24 +9,32 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import React from 'react';
-import Text from './Text.jsx';
-import Title from './Title.jsx';
+import React, { cloneElement } from 'react';
 import useDocument from '../api/useDocument.js';
 import Error from './Error.js';
 import Loading from './Loading.js';
 
+function contentFilter(node) {
+  return node.type !== 'image';
+}
+
 export default function Summary() {
-  const itemID = 'urn:fnkconnection:/aboutus';
-  const { data, errorMessage } = useDocument(itemID);
+  const itemID = 'urn:fnkconnection:/summary';
+  const { data, errorMessage } = useDocument(itemID, contentFilter);
   if (errorMessage) return <Error errorMessage={errorMessage}/>;
   if (!data) return <Loading/>;
+
+  const title = cloneElement(data.title, {
+    itemProp: 'title',
+    itemType: 'text',
+  });
   return (
-    <div className="card">
+    <div className="card" >
       <div itemID={itemID} itemType="urn:fnk:type/document" itemScope>
-        {data.dom}
-        <Title itemID={itemID} itemProp="title" itemType="text"/>
-        <Text itemID={itemID} itemProp="content" itemType="richtext"/>
+        {title}
+        <div itemProp="content" itemType="richtext">
+          {data.content}
+        </div>
       </div>
       <img src={data.images?.[0]} alt="footer"/>
     </div>

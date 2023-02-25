@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import React from 'react';
+import React, { cloneElement } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import backIcon from '../images/icon-close.svg';
 import Error from './Error.js';
@@ -43,23 +43,29 @@ function ArticleDetail() {
 }
 
 function ArticleDetailRender(props) {
-  const { name, title } = props;
-
+  const { name } = useParams();
   const itemID = `urn:fnkconnection:/magazine/${name}`;
-  const { data, errorMessage } = useDocument(itemID);
+  const { data, errorMessage } = useDocument(itemID, (node) => (node.type !== 'heading'));
   if (errorMessage) return <Error errorMessage={errorMessage}/>;
   if (!data) return <Loading/>;
 
+  const title = cloneElement(data.title, {
+    className: 'adventure-detail-title',
+    itemProp: 'title',
+    itemType: 'text',
+  });
   return (<div itemScope itemID={itemID} itemType="unr:fnk:type/document">
-      <h1 className="adventure-detail-title" itemProp="title" itemType="text">{title}</h1>
-      <div className="adventure-detail-info">
-        <Contributor {...props} />
-        <Link to={'/magazine/aboutus'}>About Us</Link>
-      </div>
+      {title}
+      { props.author
+        && <div className="adventure-detail-info">
+              <Contributor {...props} />
+              <Link to={'/magazine/aboutus'}>About Us</Link>
+           </div>
+      }
       <div className="adventure-detail-content">
         <img className="adventure-detail-primaryimage"
              src={`/assets/articles/${name}.jpeg`} alt={title}/>
-        <div>{data.dom}</div>
+        <div>{data.content}</div>
       </div>
     </div>
   );

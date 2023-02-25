@@ -17,7 +17,6 @@ import './App.scss';
 import AdventureDetail from './components/AdventureDetail.jsx';
 import Articles from './components/Articles.jsx';
 import ArticleDetail from './components/ArticleDetail.jsx';
-import About from './components/About.jsx';
 
 // const { REACT_APP_HOST_URI } = process.env;
 
@@ -41,7 +40,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/magazine" element={<Articles />} />
             <Route path="/magazine/:name" element={<ArticleDetail />} />
-            <Route path="/magazine/aboutus" element={<About />} />
           </Routes>
         </Router>
       </div>

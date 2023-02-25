@@ -39,7 +39,7 @@ export default function useSheets(uri) {
         return json.data[Number(key || 0)];
       }
       if (keycol) {
-        return json.data.find((row) => row[keycol] === key);
+        return json.data.find((row) => row[keycol] === key) || {};
       }
       return json.data;
     }
