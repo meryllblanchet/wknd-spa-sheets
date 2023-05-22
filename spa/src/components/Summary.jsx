@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import React, { cloneElement } from 'react';
+import React, { useMemo, cloneElement } from 'react';
 import useDocument from '../api/useDocument.js';
 import Error from './Error.js';
 import Loading from './Loading.js';
@@ -24,19 +24,26 @@ export default function Summary() {
   if (errorMessage) return <Error errorMessage={errorMessage}/>;
   if (!data) return <Loading/>;
 
-  const title = cloneElement(data.title, {
-    itemProp: 'title',
-    itemType: 'text',
-  });
+  const title = useMemo(
+    () =>
+      data
+        ? cloneElement(data.title, {
+            itemProp: "title",
+            itemType: "text"
+          })
+        : null,
+    [data]
+  );
+
   return (
     <div className="card" >
       <div itemID={itemID} itemType="urn:fnk:type/document" itemScope>
         {title}
         <div itemProp="content" itemType="richtext">
-          {data.content}
+          {data?.content}
         </div>
       </div>
-      <img src={data.images?.[0]} alt="footer"/>
+      {data ? <img src={data?.images?.[0]} alt="footer"/> : null }
     </div>
   );
 }
